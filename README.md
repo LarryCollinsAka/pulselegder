@@ -1,24 +1,44 @@
-# Ecme - The Ultimate Next.js & TypeScript Web Template
+# Pulse Ledger
 
-Ecme is a modern and responsive admin dashboard template built with Next.js and TypeScript. Designed to provide a highly customizable and easy-to-use platform for building admin interfaces, it includes a variety of reusable components, pre-designed pages, and dynamic features. 
+## 🚩 The Problem: The "Friction Tax" on African Trade
 
-This template is perfect for developing dashboards, web applications, CRM systems, e-commerce backends, and more. Whether you're building a small-scale admin panel or a large-scale enterprise application, Ecme is designed to be flexible and scalable.
-
-Key Features:
-- **Next.js Framework**: Built with the powerful Next.js framework, offering server-side rendering (SSR) out of the box.
-- **Responsive Layout**: Optimized for all screen sizes and devices.
-- **Dark/Light Mode**: Easily switch between light and dark themes.
-- **Configurable Themes**: Personalize colors, layouts, and more to fit your needs.
-- **Built with TypeScript**: Ensures robust type-checking and fast development.
-- **Multi-Locale Support**: Easily add and manage multiple languages.
-- **RTL Support**: Full Right-to-Left support for languages like Arabic or Hebrew.
-- **Tailwind Component-Based Architecture**: Reusable components to streamline your development process.
+Despite the promise of the **African Continental Free Trade Area (AfCFTA)**, moving value across African borders remains a complex and expensive ordeal. Intra-African trade is currently throttled by three core **frictions**:
 
 ---
-### Demo
-Check out the [Live Demo](https://ecme-react.themenate.net/) to explore the template in action.
 
+### 1. The Regulatory "Black Box"
 
-### Guide
-Please visit our [Online documentation](https://ecme-react.themenate.net/guide/documentation/introduction) for detailed guides, setup instructions, and customization options.
+Sub-Saharan Africa remains the most expensive region globally for cross-border payments, with average costs exceeding **8%** (vs. the G20 target of <3%). This is largely due to fragmented legal frameworks:
 
+- **Manual Compliance:** Businesses must navigate a maze of disparate AML/KYC rules and capital controls (e.g., **CEMAC, ECOWAS, EAC**) that differ by jurisdiction.  
+- **Burdensome Reporting:** According to the **FSB 2025 report**, the lack of automated, harmonized data exchange leads to "intended frictions" that result in settlement delays of **3–7 days**.
+
+---
+
+### 2. The Paperwork Bottleneck
+
+Trade documentation—port clearances, bills of lading, and local invoices—is still heavily analog and non-standardized.
+
+- **Information Asymmetry:** Finance teams spend days manually reconciling physical documents with bank records.  
+- **Documentation Gaps:** SMEs are often locked out of formal trade corridors because they cannot meet the rigorous, manual reporting standards required by traditional correspondent banks.
+
+---
+
+### 3. High Currency Volatility & Hidden Fees
+
+Traditional correspondent banking relies on a "chain" of intermediaries. Each link adds:
+
+- **Hidden FX Spreads:** Merchants lose significant value to unfavorable exchange rates before the money even arrives.  
+- **Liquidity Traps:** Small businesses often have to hold large reserves of USD cash just to hedge against local currency devaluation, draining their working capital.
+
+---
+
+## 📉 The Result
+
+For a small merchant in **Douala** paying a supplier in **Nairobi**, the "cost of doing business" isn't just the price of goods—it's the **week-long wait** and the **10% lost to the system**.
+
+---
+
+## 🌍 Why Pulse Ledger?
+
+Pulse Ledger is designed to eliminate these frictions by combining **escrow smart contracts, compliance automation, and transparent settlement flows**. Our mission is to make intra-African trade faster, cheaper, and more trustworthy.
