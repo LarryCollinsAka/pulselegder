@@ -3,3 +3,5 @@ pydantic
 uvicorn
 google-generativeai
 python-dotenv
+circle-developer-controlled-wallets
+upstash-redis
