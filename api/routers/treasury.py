@@ -1,18 +1,21 @@
 import logging
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from api.services.circle_service import create_wallet_set, create_wallet
+from api.services.circle_service import create_wallet_set, create_wallet, transfer_tokens
 from api.utils.persistence import save_config, load_config
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+# -----------------------------
+# Pydantic Models
+# -----------------------------
 class Wallet(BaseModel):
     id: str
     address: str
     blockchain: str
     state: str
-    createDate: str  # Matches Circle's API response key
+    createDate: str
 
 class SetupRequest(BaseModel):
     name: str = "Pulse Ledger Treasury"
@@ -23,26 +26,35 @@ class SetupResponse(BaseModel):
     wallet_set_id: str
     wallets: list[Wallet]
 
+class TransferRequest(BaseModel):
+    source_wallet_id: str
+    destination_address: str
+    amount: int  # base units (1 USDC = 1000000)
+
+class TransferResponse(BaseModel):
+    transactionId: str
+    hash: str
+    status: str
+
+# -----------------------------
+# Routes
+# -----------------------------
+
 @router.post("/setup", response_model=SetupResponse)
 async def setup_treasury(req: SetupRequest):
-    # 1. Check for persistence first
     existing_config = load_config()
     if existing_config:
-        logger.info("Existing treasury config found. Loading from disk.")
-        # FastAPI will automatically validate this dict against SetupResponse
+        logger.info("Existing treasury config found. Returning persisted config.")
         return existing_config
 
     try:
-        # 2. Sequence: Set -> Wallet
         wallet_set_id = create_wallet_set(req.name)
-        
-        # Security: In production, you'd check if wallet_set_id is an error string
-        if "Error" in wallet_set_id:
-             raise ValueError(wallet_set_id)
+        if isinstance(wallet_set_id, str) and "Error" in wallet_set_id:
+            raise ValueError(wallet_set_id)
 
         wallets_data = create_wallet(
-            wallet_set_id, 
-            blockchains=req.blockchains, 
+            wallet_set_id=wallet_set_id,
+            blockchains=req.blockchains,
             count=req.count
         )
 
@@ -50,15 +62,37 @@ async def setup_treasury(req: SetupRequest):
             "wallet_set_id": wallet_set_id,
             "wallets": wallets_data
         }
-        
-        # 3. Save for future reloads
+
         save_config(config_data)
-        
         return config_data
 
     except Exception as e:
         logger.exception("Treasury setup failed")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Failed to initialize Circle Ledger: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to initialize treasury: {str(e)}")
+
+@router.get("/config", response_model=SetupResponse)
+async def get_treasury_config():
+    config = load_config()
+    if not config:
+        raise HTTPException(status_code=404, detail="No treasury config found")
+    return config
+
+@router.post("/transfer", response_model=TransferResponse)
+async def transfer(req: TransferRequest):
+    """
+    Transfer USDC between wallets.
+    """
+    config = load_config()
+    if not config:
+        raise HTTPException(status_code=404, detail="Treasury not initialized")
+
+    result = transfer_tokens(
+        source_wallet_id=req.source_wallet_id,
+        destination_address=req.destination_address,
+        amount=req.amount
+    )
+
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+
+    return result

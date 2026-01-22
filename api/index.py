@@ -1,8 +1,20 @@
+# main.py
 from fastapi import FastAPI
+from api.routers import treasury  # import your treasury router
 
-# Define app with custom docs paths to avoid Next.js routing conflicts
-app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
+app = FastAPI(
+    title="Pulse Ledger API",
+    description="Autonomous escrow & treasury management for agentic commerce",
+    version="1.0.0"
+)
 
-@app.get("/api/health")
-def health_check():
-    return {"status": "Pulse Ledger API Online", "runtime": "Python 3.12 on Vercel"}
+# Register routers
+app.include_router(
+    treasury.router,
+    prefix="/api/treasury",
+    tags=["treasury"]
+)
+
+@app.get("/")
+def root():
+    return {"message": "Pulse Ledger API is running"}

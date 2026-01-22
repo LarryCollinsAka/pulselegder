@@ -1,13 +1,17 @@
 import uuid
-from circle_developer_controlled_wallets.apis import WalletSetsApi, WalletsApi
+from circle_developer_controlled_wallets.apis import WalletSetsApi, WalletsApi, TransactionsApi
 from circle_developer_controlled_wallets.models import (
-    CreateWalletSetRequest, 
-    CreateWalletRequest
+    CreateWalletSetRequest,
+    CreateWalletRequest,
+    CreateTransactionRequest
 )
 from circle_developer_controlled_wallets import ApiException
 from core.config import settings
-from .client import client # Assuming our initialized client is here
+from .client import client  # Initialized client
 
+# -----------------------------
+# Wallet Set Creation
+# -----------------------------
 def create_wallet_set(name: str = "Pulse Ledger WalletSet"):
     api_instance = WalletSetsApi(client)
     try:
@@ -19,12 +23,13 @@ def create_wallet_set(name: str = "Pulse Ledger WalletSet"):
         response = api_instance.create_wallet_set(request)
         return response.data.wallet_set.id
     except ApiException as e:
-        # Log the error and return a descriptive message for the UI
         print(f"Exception calling WalletSetsApi: {e}")
         return f"Error: {e.reason}"
 
+# -----------------------------
+# Wallet Creation
+# -----------------------------
 def create_wallet(wallet_set_id: str, account_type: str = "SCA", blockchains: list = None, count: int = 1):
-    # Flexible default for blockchains
     if blockchains is None:
         blockchains = ["MATIC-AMOY"]
 
@@ -39,8 +44,7 @@ def create_wallet(wallet_set_id: str, account_type: str = "SCA", blockchains: li
             "entitySecretCiphertext": settings.CIRCLE_ENTITY_SECRET
         })
         response = api_instance.create_wallet(request)
-        
-        # Return rich metadata instead of just a string address
+
         return [{
             "id": w.id,
             "address": w.address,
@@ -48,7 +52,40 @@ def create_wallet(wallet_set_id: str, account_type: str = "SCA", blockchains: li
             "state": w.state,
             "createDate": w.create_date
         } for w in response.data.wallets]
-        
+
     except ApiException as e:
         print(f"Exception calling WalletsApi: {e}")
         return []
+
+# -----------------------------
+# Token Transfer
+# -----------------------------
+def transfer_tokens(source_wallet_id: str, destination_address: str, amount: int, blockchain: str = "MATIC-AMOY"):
+    """
+    Transfer USDC between wallets.
+    amount is in base units (e.g. 1000000 = 1 USDC).
+    """
+    api_instance = TransactionsApi(client)
+    try:
+        request = CreateTransactionRequest.from_dict({
+            "idempotencyKey": str(uuid.uuid4()),
+            "source": {
+                "walletId": source_wallet_id
+            },
+            "destination": {
+                "address": destination_address,
+                "blockchain": blockchain
+            },
+            "amounts": [str(amount)],
+            "tokenId": "USDC"
+        })
+        response = api_instance.create_transaction(request)
+        tx = response.data.transaction
+        return {
+            "transactionId": tx.id,
+            "hash": tx.tx_hash,
+            "status": tx.state
+        }
+    except ApiException as e:
+        print(f"Exception calling TransactionsApi: {e}")
+        return {"error": str(e)}

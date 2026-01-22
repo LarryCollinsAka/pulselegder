@@ -1,17 +1,31 @@
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+// app/dashboard/layout.tsx
+import React from "react";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-screen bg-slate-900 text-white">
-      {/* Sidebar - Navigation for Trade, Treasury, & Compliance */}
-      <aside className="w-64 border-r border-slate-800 p-6 hidden md:block">
-        <h2 className="text-xl font-bold mb-10 text-blue-500">Pulse Ledger</h2>
-        <nav className="space-y-4">
-          <p className="text-xs uppercase text-slate-500 font-semibold">Main</p>
-          <div className="hover:text-blue-400 cursor-pointer">Overview</div>
-          <div className="hover:text-blue-400 cursor-pointer">Treasury</div>
-          <div className="hover:text-blue-400 cursor-pointer">Compliance</div>
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r p-4">
+        <h2 className="text-xl font-bold mb-6">Pulse Ledger</h2>
+        <nav className="space-y-2">
+          <a href="/dashboard" className="block px-2 py-1 hover:bg-gray-100 rounded">
+            Treasury
+          </a>
+          <a href="/dashboard/escrow" className="block px-2 py-1 hover:bg-gray-100 rounded">
+            Escrow Deals
+          </a>
+          <a href="/dashboard/transactions" className="block px-2 py-1 hover:bg-gray-100 rounded">
+            Transactions
+          </a>
         </nav>
       </aside>
-      <main className="flex-1 p-8">{children}</main>
+
+      {/* Main Content */}
+      <main className="flex-1 p-6">{children}</main>
     </div>
   );
 }
